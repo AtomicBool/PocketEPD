@@ -1,0 +1,20 @@
+XX (byte for X-coordinates)
+YY (byte for Y-coordinates)
+
+0x00                            clear buffer
+0x01                            update display
+
+4 bytes data
+0x02 XX YY YY CLOR              drawPixel
+
+5 bytes data
+0x03 XX YY YY MASK CLOR         drawByte
+0x04 XX YY YY CHAR CLOR         drawChar
+
+6 bytes data
+0x05 XX YY YY RO RI PT CLOR     drawPie
+0x06 XX XX YY YY YY YY CLOR     drawLine
+
+also will implement drawRectangle later
+
+leaving drawString() a clientSide function

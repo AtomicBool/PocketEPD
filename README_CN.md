@@ -10,6 +10,8 @@
 
 # Features
 8x16字符， 线段, 圆环进度条（如果内径设置为0就是画实心圆）
+通过一种类似脚本语言的方式绘制 `guide.txt`是通讯协议，`testCMDs`是实例（也是python脚本默认调用的）
+具体写在英文ReadME里面了因为修改实在是太不方便 这个README用于大体描述
 
 # TODO
 不在此README更新

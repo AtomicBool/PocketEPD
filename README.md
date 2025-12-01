@@ -12,6 +12,15 @@ open it via `STM32CubeIDE`
 # Features
 right now, it supports 8x16 english character, lines, progress bar(circular), and circle(reuse the progress function)
 
+Drawing can be done with scripts by running `python.exe ./pyScript/main.py`,
+see `guide.txt` (the protocol) and `testCMDs` (sample commands, also the default file python script go with) for reference
+
+params:
+'-f', '--file' file to use
+'-p', '--port' port if you want to specify one
+'-b', '--baudrate' baudrate, 115200 by default
+
+
 # TODO
 QR codes
 

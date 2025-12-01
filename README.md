@@ -13,8 +13,7 @@ open it via `STM32CubeIDE`
 right now, it supports 8x16 english character, lines, progress bar(circular), and circle(reuse the progress function)
 
 # TODO
-1. function that interpret serial input and draw things see `currentPlan.txt`
-2. drawRectangle()
+QR codes
 
 # Parts
 EPD https://www.good-display.cn/product/515.html

@@ -71,7 +71,6 @@ void Error_Handler(void);
 #define BUSY_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

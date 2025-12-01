@@ -45,6 +45,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+uint8_t usart_cmd;
+uint8_t usart_data[20];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -89,25 +91,164 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_EPD_Init();
-  EPD_clear();
-  EPD_drawStr(0, 0, "2025/11/27", font_8x16, RED);
-  EPD_drawStr(0, 16, "EPD Driver", font_8x16, BLACK);
 
-  EPD_drawPie(50, 100, 30, 20, 90, BLACK);
-  EPD_drawPie(50, 100, 30, 20, 40, RED);
+  /*
+		  EPD_clear();
+		  EPD_drawStr(0, 0, "2025/11/27", font_8x16, RED);
+		  EPD_drawStr(0, 16, "EPD Driver", font_8x16, BLACK);
 
-  EPD_update();
+		  EPD_drawPie(50, 100, 30, 20, 90, BLACK);
+		  EPD_drawPie(50, 100, 30, 20, 40, RED);
+
+		  EPD_update();
+   */
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  uint8_t ACK = 0x67;
+
   while (1)
   {
+	  HAL_Delay(1);
+	  HAL_UART_Receive(&huart1, &usart_cmd, 1, HAL_MAX_DELAY);
+	  switch(usart_cmd){
+	  	  int y0, y1, x0, x1;
+	  	  case 0x00:
+	  		  EPD_clear();
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  	  case 0x01:
+	  		  EPD_update();
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  	  case 0x02:	// XX XX YY YY CLOR
+	  		  HAL_UART_Receive(&huart1, usart_data, 5, HAL_MAX_DELAY);
 
+	  		  x0 = usart_data[1] | (usart_data[0] << 8);
+	  		  y0 = usart_data[3] | (usart_data[2] << 8);
 
-    /* USER CODE END WHILE */
+	  		  EPD_drawPixel(
+	  				  x0,
+					  y0,
+					  usart_data[4]		// color
+	  		  );
 
-    /* USER CODE BEGIN 3 */
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  	  case 0x03:	// XX XX YY YY MASK CLOR
+	  		  HAL_UART_Receive(&huart1, usart_data, 6, HAL_MAX_DELAY);
+
+	  		  x0 = usart_data[1] | (usart_data[0] << 8);
+	  		  y0 = usart_data[3] | (usart_data[2] << 8);
+
+	  		  EPD_drawByte(
+	  				  x0,
+					  y0,
+					  usart_data[4],	// bit mask
+					  usart_data[5]		// color
+	  		  );
+
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  	  case 0x04:	// XX XX YY YY CHAR CLOR
+	  		  HAL_UART_Receive(&huart1, usart_data, 6, HAL_MAX_DELAY);
+
+	  		  x0 = usart_data[1] | (usart_data[0] << 8);
+	  		  y0 = usart_data[3] | (usart_data[2] << 8);
+
+	  		  EPD_drawChar(
+	  				  x0,
+					  y0,
+					  usart_data[4],	// char
+					  font_8x16,
+					  usart_data[5]		// color
+	  		  );
+
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  	  case 0x05:	// XX XX YY YY RO RI PT CLOR
+	  		  HAL_UART_Receive(&huart1, usart_data, 8, HAL_MAX_DELAY);
+
+	  		  x0 = usart_data[1] | (usart_data[0] << 8);
+	  		  y0 = usart_data[3] | (usart_data[2] << 8);
+
+	  		  EPD_drawPie(
+	  				  x0,
+					  y0,
+					  usart_data[4],	// outer radius
+					  usart_data[5],	// inner radius
+					  usart_data[6],	// percentage
+					  usart_data[7]		// color
+	  		  );
+
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  	  case 0x06:	// XX XX YY YY XX XX YY YY CLOR
+	  		  HAL_UART_Receive(&huart1, usart_data, 9, HAL_MAX_DELAY);
+
+	  		  x0 = usart_data[1] | (usart_data[0] << 8);
+	  		  y0 = usart_data[3] | (usart_data[2] << 8);
+	  		  x1 = usart_data[5] | (usart_data[4] << 8);
+	  		  y1 = usart_data[7] | (usart_data[6] << 8);
+
+	  		  EPD_drawLine(
+	  				  x0,
+					  y0,
+					  x1,
+					  y1,
+					  usart_data[8]		// color
+	  		  );
+
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  	  case 0x07:	// XX XX YY YY XX XX YY YY CLOR
+	  		  HAL_UART_Receive(&huart1, usart_data, 9, HAL_MAX_DELAY);
+
+	  		  x0 = usart_data[1] | (usart_data[0] << 8);
+	  		  y0 = usart_data[3] | (usart_data[2] << 8);
+	  		  x1 = usart_data[5] | (usart_data[4] << 8);
+	  		  y1 = usart_data[7] | (usart_data[6] << 8);
+
+	  		  EPD_drawRectFilled(
+	  				  x0,
+					  y0,
+					  x1,
+					  y1,
+					  usart_data[8]		// color
+	  		  );
+
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  	  case 0x08: // XX XX YY YY CLOR CHAR*16
+	  		  HAL_UART_Receive(&huart1, usart_data, 21, HAL_MAX_DELAY);
+
+	  		  x0 = usart_data[1] | (usart_data[0] << 8);
+	  		  y0 = usart_data[3] | (usart_data[2] << 8);
+
+	  		  char str[17] = {0};
+	  		  for(int i = 5; i < 21; i++){
+	  			  str[i - 5] = usart_data[i];
+	  			  if(usart_data[i] == 0x00) break;
+	  		  }
+
+	  		  EPD_drawStr(
+	  				  x0,
+					  y0,
+					  str,
+					  font_8x16,
+					  usart_data[4]	// color
+	  		  );
+
+	  		  HAL_UART_Transmit(&huart1, &ACK, 1, HAL_MAX_DELAY);
+	  		  break;
+	  }
+	  /* USER CODE END WHILE */
+
+	  /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }

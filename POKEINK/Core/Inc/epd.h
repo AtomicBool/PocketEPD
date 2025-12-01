@@ -33,6 +33,7 @@ void EPD_drawPixel(int x, int y, COLOR clr);
 void EPD_drawByte(int x, int y, uint8_t mask, COLOR color);
 
 void EPD_drawLine(int x0, int y0, int x1, int y1, COLOR color);
+void EPD_drawRectFilled(int x0, int y0, int x1, int y1, COLOR color);
 void EPD_drawPie(int center_x, int center_y, int r_out, int r_in, uint8_t percentage, COLOR color);
 
 void EPD_drawChar(int x, int y, char c, uint8_t* font, COLOR color);

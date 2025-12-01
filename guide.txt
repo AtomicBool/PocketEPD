@@ -1,0 +1,23 @@
+XX (byte for X-coordinates)
+YY (byte for Y-coordinates)
+
+0x00                            clear buffer
+0x01                            update display
+
+5 bytes data
+0x02 XX XX YY YY CLOR              drawPixel
+
+6 bytes data
+0x03 XX XX YY YY MASK CLOR         drawByte
+0x04 XX XX YY YY CHAR CLOR         drawChar
+
+8 bytes
+0x05 XX XX YY YY RO RI PT CLOR     drawPie
+
+9 bytes data
+0x06 XX XX YY YY XX XX YY YY CLOR     drawLine
+0x07 XX XX YY YY XX XX YY YY CLOR     drawRectangle
+
+21 bytes data
+0x08 XX XX YY YY CLOR CHAR*16      drawString
+0x00 for null

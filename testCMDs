@@ -1,0 +1,20 @@
+clear
+
+byte 20 20 0xff 2
+
+# Black
+char 0 0 'A' 1
+# Red
+char 16 0 '!' 2
+
+pixel 21 21 1
+
+pie 50 50 30 20 100 1
+pie 50 50 30 20 40 2
+
+rect 100 100 120 200 1
+line 100 100 120 200 2
+
+str 0 250 1 "Hello, World"
+
+end

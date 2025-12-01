@@ -98,6 +98,14 @@ void EPD_drawLine(int x0, int y0, int x1, int y1, COLOR color) {
     }
 }
 
+void EPD_drawRectFilled(int x0, int y0, int x1, int y1, COLOR color){
+	for(int y = y0; y <= y1; y++) {
+		for(int x = x0; x <= x1; x++) {
+			EPD_drawPixel(x, y, color);
+		}
+	}
+}
+
 void EPD_drawPie(int center_x, int center_y, int r_out, int r_in, uint8_t percentage, COLOR color)
 {
 	int x0, y0, x1, y1, dx, dy;

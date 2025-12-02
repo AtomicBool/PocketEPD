@@ -16,8 +16,8 @@ progress bar(circular),
 QR codes,
 and circle(reuse the progress function)
 
-Drawing can be done with scripts by running `python.exe ./pyScript/main.py`,
-see `guide.txt` (the protocol) and `testCMDs` (sample commands, also the default file python script go with) for reference
+Drawings can be deployed with scripts by running `python.exe ./pyScript/main.py`,
+see `protocol.txt` (the protocol) and `testCMDs` (sample commands, also the default file python script go with) for reference
 
 params:
 '-f', '--file' file to use

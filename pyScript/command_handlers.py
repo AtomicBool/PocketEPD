@@ -38,7 +38,7 @@ def drawPixel(params, hSerial):
     hSerial.write(packet)
     return waitACK(hSerial)
 
-def drawByte(params, hSerial):
+def drawByte(params, hSerial, print_packs = True):
     x0 = int(params[0])
     y0 = int(params[1])
     mask = int(params[2], 0)
@@ -52,7 +52,8 @@ def drawByte(params, hSerial):
         color
     ])
 
-    print(packet.hex("_"))
+    if(print_packs):
+        print(packet.hex("_"))
     hSerial.write(packet)
     return waitACK(hSerial)
 
@@ -157,6 +158,8 @@ def send_qr_data(x0, y0, matrix, color, hSerial):
     height = len(matrix)
     width = len(matrix[0])
     
+    print(f"[-] QR matrix size: {width}x{height}")
+
     bytes_per_row = width // 8
     
     success_count = 0
@@ -178,11 +181,11 @@ def send_qr_data(x0, y0, matrix, color, hSerial):
             y_pos = y0 + y
 
             drawByte_params = [str(x_pos), str(y_pos), f"0x{byte_mask:02x}", str(color)]
-            if drawByte(drawByte_params, hSerial):
+            if drawByte(drawByte_params, hSerial, False):
                 success_count += 1
             total_commands += 1
     
-    print(f"[+] QR bytes sent: {success_count}/{total_commands} successfully")
+    print(f"[-] QR bytes sent: {success_count}/{total_commands} successfully")
     return success_count == total_commands
 
 def drawQR(params, hSerial):

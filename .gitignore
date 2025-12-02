@@ -1,5 +1,8 @@
-pyScript/__pycache__/
+*.pyc
 
 POKEINK/Release/*
 POKEINK/Denug/*
 POKEINK/.settings/*
+
+# Private files
+set_1

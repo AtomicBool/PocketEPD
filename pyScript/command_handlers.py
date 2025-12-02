@@ -1,4 +1,7 @@
 import time
+import qrcode
+
+from utils.qr import generate_qr_matrix 
 
 def waitACK(hSerial, timeout=30.0):
     start_time = time.time()
@@ -33,8 +36,7 @@ def drawPixel(params, hSerial):
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
-    return True
+    return waitACK(hSerial)
 
 def drawByte(params, hSerial):
     x0 = int(params[0])
@@ -52,8 +54,7 @@ def drawByte(params, hSerial):
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
-    return True
+    return waitACK(hSerial)
 
 def drawChar(params, hSerial):
     x0 = int(params[0])
@@ -71,8 +72,7 @@ def drawChar(params, hSerial):
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
-    return True
+    return waitACK(hSerial)
 
 def drawPie(params, hSerial):
     x0 = int(params[0])
@@ -94,8 +94,7 @@ def drawPie(params, hSerial):
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
-    return True
+    return waitACK(hSerial)
 
 def drawLine(params, hSerial):
     x0 = int(params[0])
@@ -114,8 +113,7 @@ def drawLine(params, hSerial):
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
-    return True
+    return waitACK(hSerial)
 
 def drawRectangle(params, hSerial):
     x0 = int(params[0])
@@ -134,8 +132,7 @@ def drawRectangle(params, hSerial):
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
-    return True
+    return waitACK(hSerial)
 
 def drawString(params, hSerial):
     x0 = int(params[0])
@@ -154,7 +151,70 @@ def drawString(params, hSerial):
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
+    return waitACK(hSerial)
+
+def send_qr_data(x0, y0, matrix, color, hSerial):
+    height = len(matrix)
+    width = len(matrix[0])
+    
+    bytes_per_row = width // 8
+    
+    success_count = 0
+    total_commands = 0
+
+    for y in range(height):
+        for byte_col in range(bytes_per_row):
+            start_bit = byte_col * 8
+            end_bit = start_bit + 8
+            
+            byte_mask = 0
+            
+            for bit_pos in range(start_bit, end_bit):
+                if matrix[y][bit_pos]: # if color is set
+                    pos_in_byte = 7 - (bit_pos - start_bit)
+                    byte_mask |= (1 << pos_in_byte)
+                    
+            x_pos = x0 + start_bit
+            y_pos = y0 + y
+
+            drawByte_params = [str(x_pos), str(y_pos), f"0x{byte_mask:02x}", str(color)]
+            if drawByte(drawByte_params, hSerial):
+                success_count += 1
+            total_commands += 1
+    
+    print(f"[+] QR bytes sent: {success_count}/{total_commands} successfully")
+    return success_count == total_commands
+
+def drawQR(params, hSerial):
+    # x y color border size data [error_correction] [version]
+    x0 = int(params[0])
+    y0 = int(params[1])
+    color = int(params[2])
+    border = int(params[3])
+    size = int(params[4])
+    text = params[5]
+    
+    error_correction_map = {
+            "L": qrcode.constants.ERROR_CORRECT_L,
+            "M": qrcode.constants.ERROR_CORRECT_M,
+            "Q": qrcode.constants.ERROR_CORRECT_Q,
+            "H": qrcode.constants.ERROR_CORRECT_H
+        }
+    ec = error_correction_map.get(
+        params[6],
+        qrcode.constants.ERROR_CORRECT_L
+    ) if len(params) > 6 else qrcode.constants.ERROR_CORRECT_L
+    
+    mat = generate_qr_matrix(
+        data = text,
+        qr_border = border,
+        qr_ec = ec,
+        qr_version = int(params[7]) if len(params) > 7 else None,
+        qr_size = size
+    )
+
+    send_qr_data(x0, y0, mat, color, hSerial)
+    
     return True
 
 def clearScreen(params, hSerial):
@@ -162,16 +222,14 @@ def clearScreen(params, hSerial):
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
-    return True
+    return waitACK(hSerial)
 
 def updateDisplay(params, hSerial):
     packet = bytes([0x01])
 
     print(packet.hex("_"))
     hSerial.write(packet)
-    waitACK(hSerial)
-    return True
+    return waitACK(hSerial)
 
 command_map = {
     "clear": clearScreen,
@@ -182,5 +240,6 @@ command_map = {
     "pie": drawPie,
     "line": drawLine,
     "rect": drawRectangle,
-    "str": drawString
+    "str": drawString,
+    "qr": drawQR
 }
